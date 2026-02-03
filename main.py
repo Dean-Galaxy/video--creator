@@ -62,7 +62,12 @@ def main() -> None:
             final_clips.append(create_clip(video_path, audio_path))
 
     output_path = resolve_output_path(config.output_dir / "output.mp4")
-    assemble_video(final_clips, output_path)
+    assemble_video(
+        final_clips,
+        output_path,
+        config.intro_music_path,
+        config.outro_music_path,
+    )
 
     if not args.keep_temp and not args.no_tts:
         cleanup_temp(config)

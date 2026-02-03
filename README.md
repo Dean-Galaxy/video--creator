@@ -25,6 +25,9 @@ Emotions:
 Angles:
 全景、远景、中景、近景、特写、留白、右中景、左远景
 
+TTS Emotion Mapping (Fish Audio):
+平静->calm、嘲讽->angry、愤怒->angry、伤心->sad、开心->happy
+
 ## Setup
 
 1. Install dependencies:
@@ -38,6 +41,8 @@ pip install -r requirements.txt
 ```
 FISH_API_KEY=your_api_key_here
 FISH_REFERENCE_ID=your_reference_id_here
+INTRO_MUSIC_PATH=assets/bgm/intro.mp3
+OUTRO_MUSIC_PATH=assets/bgm/outro.mp3
 ```
 
 ### Getting a Fish Audio API Key
