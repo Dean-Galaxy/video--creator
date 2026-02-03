@@ -1,0 +1,1 @@
+"""AutoSatire source package."""
