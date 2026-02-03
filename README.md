@@ -54,7 +54,7 @@ OUTRO_MUSIC_PATH=assets/bgm/outro.mp3
 ## Usage
 
 ```
-python main.py script.json
+python3 main.py script.json
 ```
 
 Optional:

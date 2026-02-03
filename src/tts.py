@@ -16,7 +16,7 @@ EMOTION_TAG_MAP = {
     "伤心": "sad",
     "愤怒": "angry",
     "平静": "calm",
-    "嘲讽": "angry",
+    "嘲讽": "calm",
     "happy": "happy",
     "sad": "sad",
     "angry": "angry",
