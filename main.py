@@ -2,13 +2,19 @@ import argparse
 import sys
 from pathlib import Path
 
+from moviepy.editor import VideoFileClip
 from tqdm import tqdm
 
 from src.config import Config
 from src.parser import load_script
 from src.tts import batch_process_audio
-from src.utils import cleanup_temp, validate_asset_path
-from src.video_processor import assemble_video, create_clip
+from src.utils import (
+    cleanup_temp,
+    resolve_laugh_audio_path,
+    resolve_laugh_video_path,
+    validate_asset_path,
+)
+from src.video_processor import assemble_video, create_clip, create_laugh_clip
 
 
 def parse_args() -> argparse.Namespace:
@@ -50,16 +56,39 @@ def main() -> None:
         print(f"Asset validation failed: {exc}")
         sys.exit(1)
     final_clips = []
+    if config.intro_video_path:
+        final_clips.append(VideoFileClip(str(config.intro_video_path)))
+    outro_start_time = None
+    outro_video_duration = None
     if args.no_tts:
         for item in tqdm(script_items, desc="Processing clips"):
             video_path = validate_asset_path(item.emotion, item.angle, config)
-            final_clips.append(create_clip(video_path, None))
+            clip = create_clip(video_path, None)
+            final_clips.append(clip)
+            laugh_path = resolve_laugh_audio_path(item.laugh, config)
+            laugh_video_path = resolve_laugh_video_path(
+                item.laugh, item.angle, config
+            )
+            if laugh_path and laugh_video_path:
+                final_clips.append(create_laugh_clip(laugh_video_path, laugh_path))
     else:
         audio_map = batch_process_audio(script_items, config)
         for item in tqdm(script_items, desc="Processing clips"):
             video_path = validate_asset_path(item.emotion, item.angle, config)
             audio_path = audio_map[item.item_id]
-            final_clips.append(create_clip(video_path, audio_path))
+            clip = create_clip(video_path, audio_path)
+            final_clips.append(clip)
+            laugh_path = resolve_laugh_audio_path(item.laugh, config)
+            laugh_video_path = resolve_laugh_video_path(
+                item.laugh, item.angle, config
+            )
+            if laugh_path and laugh_video_path:
+                final_clips.append(create_laugh_clip(laugh_video_path, laugh_path))
+    if config.outro_video_path:
+        outro_start_time = sum(clip.duration or 0 for clip in final_clips)
+        outro_clip = VideoFileClip(str(config.outro_video_path))
+        outro_video_duration = outro_clip.duration or 0
+        final_clips.append(outro_clip)
 
     output_path = resolve_output_path(config.output_dir / "output.mp4")
     assemble_video(
@@ -67,6 +96,8 @@ def main() -> None:
         output_path,
         config.intro_music_path,
         config.outro_music_path,
+        outro_start_time,
+        outro_video_duration,
     )
 
     if not args.keep_temp and not args.no_tts:

@@ -29,11 +29,36 @@ def create_clip(video_path: Path, audio_path: Optional[Path]) -> VideoFileClip:
     return video_clip.set_audio(audio_clip)
 
 
+def create_laugh_clip(
+    laugh_video_path: Path, laugh_audio_path: Path
+) -> VideoFileClip:
+    if not laugh_video_path.exists():
+        raise FileNotFoundError(f"Missing laugh video: {laugh_video_path}")
+    if not laugh_audio_path.exists():
+        raise FileNotFoundError(f"Missing laugh audio: {laugh_audio_path}")
+
+    laugh_video = VideoFileClip(str(laugh_video_path))
+    laugh_audio = AudioFileClip(str(laugh_audio_path))
+    audio_duration = laugh_audio.duration
+    video_duration = laugh_video.duration
+
+    if audio_duration > video_duration:
+        looped = laugh_video.fx(vfx.loop, duration=audio_duration)
+        laugh_video = looped.set_duration(audio_duration)
+    elif audio_duration < video_duration:
+        laugh_video = laugh_video.subclip(0, audio_duration)
+
+    laugh_video = laugh_video.fx(vfx.speedx, 1.3)
+    return laugh_video.set_audio(laugh_audio)
+
+
 def assemble_video(
     clips_list: List[VideoFileClip],
     output_path: Path,
     intro_audio_path: Optional[Path] = None,
     outro_audio_path: Optional[Path] = None,
+    outro_start_time: Optional[float] = None,
+    outro_video_duration: Optional[float] = None,
 ) -> None:
     max_music_duration = 5.0
     fade_duration = 1.0
@@ -58,14 +83,22 @@ def assemble_video(
     if outro_audio_path:
         outro_audio = AudioFileClip(str(outro_audio_path))
         created_audio_clips.append(outro_audio)
-        outro_duration = min(
-            outro_audio.duration or 0, max_music_duration, final_clip.duration or 0
-        )
+        if outro_video_duration is None:
+            outro_duration = min(
+                outro_audio.duration or 0, max_music_duration, final_clip.duration or 0
+            )
+        else:
+            outro_duration = min(
+                outro_audio.duration or 0, outro_video_duration, final_clip.duration or 0
+            )
         if outro_duration > 0:
             outro_clip = outro_audio.subclip(0, outro_duration)
             outro_clip = outro_clip.volumex(0.5)
             outro_clip = outro_clip.fx(afx.audio_fadein, min(fade_duration, outro_duration))
-            start_time = max(0, (final_clip.duration or 0) - outro_duration)
+            if outro_start_time is None:
+                start_time = max(0, (final_clip.duration or 0) - outro_duration)
+            else:
+                start_time = max(0, outro_start_time)
             audio_layers.append(outro_clip.set_start(start_time))
 
     if audio_layers:

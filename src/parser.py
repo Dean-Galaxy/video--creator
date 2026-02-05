@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List
 
 from src.config import Config
-from src.utils import validate_asset_path
+from src.utils import normalize_laugh, validate_asset_path
 
 
 @dataclass(frozen=True)
@@ -13,6 +13,7 @@ class ScriptItem:
     angle: str
     emotion: str
     text: str
+    laugh: str
 
 
 def load_script(filepath: Path, config: Config) -> List[ScriptItem]:
@@ -28,10 +29,17 @@ def load_script(filepath: Path, config: Config) -> List[ScriptItem]:
         angle = str(raw_item.get("angle"))
         emotion = str(raw_item.get("emotion"))
         text = str(raw_item.get("text"))
+        laugh = normalize_laugh(raw_item.get("laugh", "不笑"))
 
         validate_asset_path(emotion, angle, config)
         script_items.append(
-            ScriptItem(item_id=item_id, angle=angle, emotion=emotion, text=text)
+            ScriptItem(
+                item_id=item_id,
+                angle=angle,
+                emotion=emotion,
+                text=text,
+                laugh=laugh,
+            )
         )
 
     return script_items

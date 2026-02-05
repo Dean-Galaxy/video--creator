@@ -17,10 +17,14 @@ EMOTION_TAG_MAP = {
     "愤怒": "angry",
     "平静": "calm",
     "嘲讽": "calm",
+    "震惊": "surprised",
+    "害怕": "fear",
     "happy": "happy",
     "sad": "sad",
     "angry": "angry",
     "calm": "calm",
+    "surprised": "surprised",
+    "fear": "fear",
 }
 
 

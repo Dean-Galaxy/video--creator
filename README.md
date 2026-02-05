@@ -20,13 +20,18 @@ pre-recorded assets, and Fish Audio-generated voice audio.
 ## Asset Naming
 
 Emotions:
-愤怒、嘲讽、平静、伤心、开心
+愤怒、嘲讽、平静、伤心、开心、震惊、害怕
 
 Angles:
 全景、远景、中景、近景、特写、留白、右中景、左远景
 
 TTS Emotion Mapping (Fish Audio):
-平静->calm、嘲讽->angry、愤怒->angry、伤心->sad、开心->happy
+平静->calm、嘲讽->calm、愤怒->angry、伤心->sad、开心->happy、震惊->surprised、害怕->fear
+
+Laugh Types:
+script.json `laugh` supports: 不笑、小笑、大笑、爆笑
+Audio: assets/laugh/<类型>.mp3
+Video: assets/<类型>/<同一angle>.mp4
 
 ## Setup
 
@@ -43,6 +48,8 @@ FISH_API_KEY=your_api_key_here
 FISH_REFERENCE_ID=your_reference_id_here
 INTRO_MUSIC_PATH=assets/bgm/intro.mp3
 OUTRO_MUSIC_PATH=assets/bgm/outro.mp3
+INTRO_VIDEO_PATH=assets/intro/intro.mp4
+OUTRO_VIDEO_PATH=assets/outro/outro.mp4
 ```
 
 ### Getting a Fish Audio API Key

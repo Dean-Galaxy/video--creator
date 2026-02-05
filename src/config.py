@@ -25,6 +25,9 @@ class Config:
     temp_dir: Path
     intro_music_path: Path | None
     outro_music_path: Path | None
+    intro_video_path: Path | None
+    outro_video_path: Path | None
+    laugh_dir: Path
 
     @classmethod
     def load(cls, base_dir: Path | None = None) -> "Config":
@@ -38,6 +41,12 @@ class Config:
         outro_music = _resolve_optional_path(
             resolved_base, os.environ.get("OUTRO_MUSIC_PATH", "")
         )
+        intro_video = _resolve_optional_path(
+            resolved_base, os.environ.get("INTRO_VIDEO_PATH", "")
+        )
+        outro_video = _resolve_optional_path(
+            resolved_base, os.environ.get("OUTRO_VIDEO_PATH", "")
+        )
         return cls(
             base_dir=resolved_base,
             fish_api_key=api_key,
@@ -47,6 +56,9 @@ class Config:
             temp_dir=resolved_base / "temp",
             intro_music_path=intro_music,
             outro_music_path=outro_music,
+            intro_video_path=intro_video,
+            outro_video_path=outro_video,
+            laugh_dir=resolved_base / "assets" / "laugh",
         )
 
     def validate(self) -> None:
@@ -58,6 +70,10 @@ class Config:
             raise FileNotFoundError(f"Missing intro music: {self.intro_music_path}")
         if self.outro_music_path and not self.outro_music_path.exists():
             raise FileNotFoundError(f"Missing outro music: {self.outro_music_path}")
+        if self.intro_video_path and not self.intro_video_path.exists():
+            raise FileNotFoundError(f"Missing intro video: {self.intro_video_path}")
+        if self.outro_video_path and not self.outro_video_path.exists():
+            raise FileNotFoundError(f"Missing outro video: {self.outro_video_path}")
 
     @property
     def ASSETS_DIR(self) -> Path:
