@@ -43,7 +43,12 @@ def resolve_laugh_video_path(laugh: str, angle: str, config: Config) -> Path | N
     if value == "不笑":
         return None
     angle_value = normalize_angle(angle)
-    return config.assets_dir / value / f"{angle_value}.mp4"
+    asset_dir = config.assets_dir / value
+    candidates = sorted(asset_dir.glob(f"{angle_value}.*"))
+    if not candidates:
+        expected = asset_dir / f"{angle_value}.*"
+        raise FileNotFoundError(f"Missing laugh video: {expected}")
+    return candidates[0]
 
 
 def validate_asset_path(emotion: str, angle: str, config: Config) -> Path:
@@ -52,10 +57,12 @@ def validate_asset_path(emotion: str, angle: str, config: Config) -> Path:
         normalized_angle = str(angle).strip()
     else:
         normalized_angle = normalize_angle(angle)
-    asset_path = config.assets_dir / normalized_emotion / f"{normalized_angle}.mp4"
-    if not asset_path.exists():
-        raise FileNotFoundError(f"Missing asset: {asset_path}")
-    return asset_path
+    asset_dir = config.assets_dir / normalized_emotion
+    candidates = sorted(asset_dir.glob(f"{normalized_angle}.*"))
+    if not candidates:
+        expected = asset_dir / f"{normalized_angle}.*"
+        raise FileNotFoundError(f"Missing asset: {expected}")
+    return candidates[0]
 
 
 def cleanup_temp(config: Config) -> None:

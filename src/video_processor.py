@@ -49,6 +49,9 @@ def create_laugh_clip(
         laugh_video = laugh_video.subclip(0, audio_duration)
 
     laugh_video = laugh_video.fx(vfx.speedx, 1.3)
+    target_duration = min(laugh_video.duration, laugh_audio.duration)
+    laugh_video = laugh_video.subclip(0, target_duration)
+    laugh_audio = laugh_audio.subclip(0, target_duration)
     return laugh_video.set_audio(laugh_audio)
 
 
@@ -107,8 +110,8 @@ def assemble_video(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     try:
         final_clip.write_videofile(
-            str(output_path), codec="libx264", audio_codec="aac", fps=30
-        )
+            str(output_path), codec="libx264", audio_codec="aac", fps=30, preset="medium"
+    )
     finally:
         final_clip.close()
         for clip in created_audio_clips:
