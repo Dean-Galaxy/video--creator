@@ -20,10 +20,13 @@ pre-recorded assets, and Fish Audio-generated voice audio.
 ## Asset Naming
 
 Emotions:
-愤怒、嘲讽、平静、伤心、开心、震惊、害怕
+愤怒、嘲讽、平静、伤心、开心、震惊、害怕、动作
 
 Angles:
 全景、远景、中景、近景、特写、留白、右中景、左远景
+
+When emotion is 动作, angle is not restricted and maps to:
+assets/动作/<angle>.mp4
 
 TTS Emotion Mapping (Fish Audio):
 平静->calm、嘲讽->calm、愤怒->angry、伤心->sad、开心->happy、震惊->surprised、害怕->fear

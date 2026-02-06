@@ -1,7 +1,7 @@
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 from src.config import Config
 from src.utils import normalize_laugh, validate_asset_path
@@ -12,7 +12,7 @@ class ScriptItem:
     item_id: int
     angle: str
     emotion: str
-    text: str
+    text: Optional[str]
     laugh: str
 
 
@@ -28,7 +28,8 @@ def load_script(filepath: Path, config: Config) -> List[ScriptItem]:
         item_id = int(raw_item.get("id"))
         angle = str(raw_item.get("angle"))
         emotion = str(raw_item.get("emotion"))
-        text = str(raw_item.get("text"))
+        raw_text = raw_item.get("text")
+        text = None if raw_text is None else str(raw_text)
         laugh = normalize_laugh(raw_item.get("laugh", "不笑"))
 
         validate_asset_path(emotion, angle, config)

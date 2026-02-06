@@ -2,7 +2,7 @@ from pathlib import Path
 
 from src.config import Config
 
-EMOTION_NAMES = {"愤怒", "嘲讽", "平静", "伤心", "开心", "震惊", "害怕"}
+EMOTION_NAMES = {"愤怒", "嘲讽", "平静", "伤心", "开心", "震惊", "害怕", "动作"}
 ANGLE_NAMES = {"全景", "远景", "中景", "近景", "特写", "留白", "右中景", "左远景"}
 LAUGH_NAMES = {"不笑", "小笑", "大笑", "爆笑"}
 
@@ -48,7 +48,10 @@ def resolve_laugh_video_path(laugh: str, angle: str, config: Config) -> Path | N
 
 def validate_asset_path(emotion: str, angle: str, config: Config) -> Path:
     normalized_emotion = normalize_emotion(emotion)
-    normalized_angle = normalize_angle(angle)
+    if normalized_emotion == "动作":
+        normalized_angle = str(angle).strip()
+    else:
+        normalized_angle = normalize_angle(angle)
     asset_path = config.assets_dir / normalized_emotion / f"{normalized_angle}.mp4"
     if not asset_path.exists():
         raise FileNotFoundError(f"Missing asset: {asset_path}")

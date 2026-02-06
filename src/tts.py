@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, Iterable
+from typing import Dict, Iterable, Optional
 
 import requests
 
@@ -62,9 +62,12 @@ def generate_audio(
 
 def batch_process_audio(
     script_data: Iterable[ScriptItem], config: Config
-) -> Dict[int, Path]:
-    audio_map: Dict[int, Path] = {}
+) -> Dict[int, Optional[Path]]:
+    audio_map: Dict[int, Optional[Path]] = {}
     for item in script_data:
+        if not item.text:
+            audio_map[item.item_id] = None
+            continue
         output_path = config.temp_dir / f"{item.item_id}_audio.mp3"
         if not output_path.exists():
             generate_audio(item.text, output_path, config, item.emotion)
